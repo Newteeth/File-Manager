@@ -1,25 +1,25 @@
 {
-    "cd" : "Go to dedicated folder from current directory <cd path_to_directory>",
+    "cd" : "Go to dedicated folder from current directory <cd path_to_directory",
 
     "up" : "Go upper from current directory",
 
     "ls" : "Print in console list of all files and folders in current directory",
     
-    "cat": "Read file and print it's content in console <cat path_to_file>",
+    "cat": "Read file and print it's content in console <cat path_to_file",
 
-    "add": "Create empty file in current working directory <add new_file_name>",
+    "add": "Create empty file in current working directory <add new_file_name",
     
-    "rn": "Rename file <rn path_to_file new_filename>",
+    "rn": "Rename file <rn path_to_file new_filename",
     
-    "cp": "Copy file <cp path_to_file path_to_new_directory>",
+    "cp": "Copy file <cp path_to_file path_to_new_directory",
     
-    "mv": "Move file <mv path_to_file path_to_new_directory>",
+    "mv": "Move file <mv path_to_file path_to_new_directory",
     
-    "rm": "Delete file <rm path_to_file>",
+    "rm": "Delete file <rm path_to_file",
     
-    "hash": "Calculate hash for file and print it into console <hash path_to_file>",
+    "hash": "Calculate hash for file and print it into console <hash path_to_file",
     
-    "compress": "Compress file <compress path_to_file path_to_destination>",
+    "compress": "Compress file <compress path_to_file path_to_destination",
     
-    "decompress": "Decompress file <decompress path_to_file path_to_destination>"
+    "decompress": "Decompress file <decompress path_to_file path_to_destination"
 }

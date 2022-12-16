@@ -1,20 +1,15 @@
 import process from 'process';
-import { fork  } from "child_process";
-import { fileURLToPath } from 'url';
-import path from 'path';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const root = path.parse(__dirname).dir;
-const path_command = path.join(root, 'function', 'command.js');
+import { start } from './start_path.js';
+import { commander_one } from '../function/command_1.js';
 
 export const helloFile = (name) => {
     setTimeout(() => {
         process.stdout.write(`Welcome to the File Manager, ${name}!\n\n`);
     });
     setTimeout(() => {
-        process.stdout.write(`You are currently in path: ${1}\n
+        process.stdout.write(`You are currently in path: ${start()}\n
 Enter command or "help" for a list of commands: `);
-        fork(path_command);
+        process.stdin.on('data', commander_one);
+        
     }, 1000);
 };

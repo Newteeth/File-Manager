@@ -1,11 +1,12 @@
+import { last, start } from '../start_fm/start_path.js';
 import { lastDirectory } from '../start_fm/path_generator.js';
 
-const args = process.argv.slice(2).toString();
-
-const up = () => {
-    const path_next = lastDirectory()
-    console.log('function up: ' + args);
-    process.stdout.write(`You are currently in path: ${"1"}\n
+export const up = () => {
+    const now_path = start().split('\\');
+    now_path.pop();
+    const str = now_path.join('\\');
+    const path_next = lastDirectory(str);
+    last(path_next);
+    process.stdout.write(`You are currently in path: ${path_next}\n
 Enter command or "help" for a list of commands: `);
 }
-up();

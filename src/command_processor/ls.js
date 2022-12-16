@@ -1,40 +1,41 @@
-import { lastDirectory } from '../start_fm/path_generator.js';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
-import os from 'os';
+import { start } from '../start_fm/start_path.js';
 
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.join(__filename);
-// const root = path.parse(__dirname).dir;
-const f = os.homedir();
-// const args = process.argv.slice(2).toString();
-
-const ls = () => {
-    let arr = [];    
-
-    fs.readdir(f, (error, files) => {
+export const ls = () => {
+    let arr = [];
+    fs.readdir(start(), {withFileTypes: true, encoding: 'utf8'}, (error, files) => {
         if (error) throw new Error ('FS operation failed');
-        
-        files.forEach((item, index) => {
-            const extname = path.extname(item);            
-            const path_next = lastDirectory(f, item);
-            const dir = fs.stat(path_next, (error, item) => { // work
-                if (error) throw new Error ('FS operation failed');
-                return item.isFile() ? 'File' : 'Directory';                
-            });
+        files.forEach(async (item) => {
+            const extname =  path.extname(item.name);
             arr.push(
-                { 
-                    name: path.basename(item, extname), 
-                    resolution: extname
-                    // file: dir // not work
+                {
+                    name: path.basename(item.name, extname), 
+                    resolution: extname.slice(1),
+                    file: item.isFile() ? 'File' : 'Directory'
+                
                 }
             );
         });
-        console.table(arr);
-        process.stdout.write(`You are currently in path: ${"1"}\n
+
+        let arr__dir = [];
+        let arr_file = [];
+        let arr_general = [];
+
+        arr.forEach((elem, index) => {
+            if (elem.file === 'Directory') {
+                arr.sort((a, b) => a.name > b.name ? 1 : -1);
+                arr__dir.push(elem);
+            }
+            if (elem.file === 'File') {
+                arr.sort((a, b) => a.name > b.name ? 1 : -1);
+                arr_file.push(elem);
+            }
+        });
+        arr_general.push(arr__dir, arr_file);
+        let newArray = arr_general.flat();
+        console.table(newArray);
+        process.stdout.write(`You are currently in path: ${start()}\n
 Enter command or "help" for a list of commands: `);
     });
 }
-
-ls();
