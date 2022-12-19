@@ -1,38 +1,36 @@
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import process from 'process';
-import { lastDirectory } from '../start_fm/path_generator.js';
 import { find_commands } from '../function/index.js';
+import { start } from '../start_fm/start_path.js';
+import { messegePath } from '../function/messege.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const root = path.parse(__dirname).dir;
-const path_command_book = path.join(root, 'config.json');
-const path_command = path.join(root, 'command_processor');
+const pathCommandBook = path.join(root, 'config.json');
 
 export const commander_one = (command) => {
+
+    const pathNow = start();
     const buffer = Buffer.from(command).toString().trim();
-    const buffer_cmd = Buffer.from(command).toString().trim().split(' ')[0];
 
     if (buffer === 'Help' || buffer === 'help') {
-        fs.readFile(path_command_book, (error, data) => {
+        fs.readFile(pathCommandBook, (error, data) => {
             let arr = [];
-            if (error) throw new Error ('///');
-            let command_in_json = JSON.parse(data);
-            Object.keys(command_in_json).forEach((item, i) => {
-                const command_for_path = Object.values(command_in_json)[i].split('<')[1];
+            if (error) console.error ('Invalid command');
+            let commandInJson = JSON.parse(data);
+            Object.keys(commandInJson).forEach((item, i) => {
+                const commandForPath = Object.values(commandInJson)[i].split('<')[1];
                 arr.push(
                     {
-                        command: Object.keys(command_in_json)[i], 
-                        description: Object.values(command_in_json)[i].split('<')[0],
-                        path: command_for_path === undefined ? 'not command' : command_for_path
+                        command: Object.keys(commandInJson)[i], 
+                        description: Object.values(commandInJson)[i].split('<')[0],
+                        path: commandForPath === undefined ? 'not command' : commandForPath
                     });
             });
             console.table(arr);
-            process.stdout.write(`You are currently in path: ${'1'}\n 
-Enter command or "help" for a list of commands: `);
-    
+            messegePath(pathNow);
         });
     } else {
         find_commands(buffer);

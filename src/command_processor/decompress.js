@@ -1,28 +1,67 @@
-import zlip from 'node:zlib';
-import fs from 'fs';
+import  fs, { constants }  from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import zlip from 'node:zlib';
+import process from 'process';
 import { pipeline } from 'node:stream';
-// import { lastDirectory } from '../start_fm/path_generator.js';
+import { lastDirectory } from '../start_fm/path_generator.js';
+import { start } from '../start_fm/start_path.js';
+import { messegePath } from '../function/messege.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const root = path.parse(__dirname).dir;
-const path_file_read = path.join(root, 'files', 'text.txt');
-const path_file_zip = path.join(root, 'files', 'text.gz');
+export const decompess =  async (...args) => {
 
-const args = process.argv.slice(2).toString();
+    const pathNow = start();
+    const gzip = zlip.BrotliDecompress();    
+    const pathFileForDecompress = lastDirectory(pathNow, args[0]);
+    const readZip = fs.createReadStream(pathFileForDecompress);
+    const point = args[1].indexOf(':');
+    const nameFile = `${args[0]}`.split('.br')[0];
+    let pathToDecompression = '';
+    let fileToDecompress = '';
+    let writeDeZip = '';
 
-const decompess =  async () => {
-    // const path_next = lastDirectory();
-    const gzip = zlip.createUnzip();
-    const read_zip = fs.createReadStream(path_file_zip);
-    const write_zip = fs.createWriteStream(path_file_read, { encoding: 'utf8'});
-    pipeline(read_zip, gzip, write_zip, (error) => {
-        if (error) throw new Error('File not decompress');
-    });
-    process.stdout.write(`You are currently in path: ${1}\n
-Enter command or "help" for a list of commands: `);
+    try {
+        if (point > 0) {
+            pathToDecompression = args[1];
+            fs.access(pathToDecompression, constants.F_OK, (error) => {
+                if (error) {
+                    console.error('Invalid path');
+                    messegePath(pathNow);
+                    return;
+                }
+                fileToDecompress = lastDirectory(args[1], nameFile);
+                writeDeZip = fs.createWriteStream(fileToDecompress, { encoding: 'utf8'});
+                pipeline(readZip, gzip, writeDeZip, (error) => {
+                    if (error) console.log('File not decompress');
+                    process.stdout.write(`${args[0]} decompress in: ${pathToDecompression}\n`)
+                    messegePath(pathNow);
+                });
+            });            
+        }
+        if (point === -1) {
+            pathToDecompression = args[1];
+            fs.access(pathFileForDecompress, constants.F_OK, (error) => {
+                if (error) {
+                    console.error('Invalid path');
+                    messegePath(pathNow);
+                    return;           
+                }
+                fileToDecompress = lastDirectory(pathNow, nameFile);
+                writeDeZip = fs.createWriteStream(fileToDecompress, { encoding: 'utf8'});
+                pipeline(readZip, gzip, writeDeZip, (error) => {
+                    if (error) {
+                        console.error('File not decompress');
+                        messegePath(pathNow);
+                        return;
+                    }
+                    process.stdout.write(`${args[0]} decompress in: ${pathToDecompression}\n`);
+                    messegePath(pathNow);
+                });
+            });
+        }
+    }
+    catch {
+        console.error('error')
+    }    
 }
 
-await decompess();
+

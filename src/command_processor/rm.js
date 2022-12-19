@@ -1,28 +1,29 @@
 import fs, { constants } from 'fs';
 import { start } from '../start_fm/start_path.js';
 import { lastDirectory } from '../start_fm/path_generator.js';
+import { messegePath } from '../function/messege.js';
 
-export const rm =  (path_file_for_delete) => {
-    const path_now = start();
+export const rm =  (pathFileForDelete) => {
+
+    const pathNow = start();
+
     try {
-        const path_next = lastDirectory(path_now, path_file_for_delete);
-        fs.access(path_next, constants.F_OK, (error) => {
+        const pathNext = lastDirectory(pathNow, pathFileForDelete);
+        fs.access(pathNext, constants.F_OK, (error) => {
             if (error) {
-                console.log(`File ${path_file_for_delete} missing\n`);
-                process.stdout.write(`You are currently in path: ${path_now}\n
-Enter command or "help" for a list of commands: `);
+                console.log(`File ${pathFileForDelete} missing\n`);
+                messegePath(pathNow);
             } else {
-                fs.unlink(path_next, (error) => {
+                fs.unlink(pathNext, (error) => {
                     if (error) console.log ('FS operation failed');
                 });
-                process.stdout.write(`File ${path_file_for_delete} delete`);
-                process.stdout.write(`You are currently in path: ${path_now}\n
-Enter command or "help" for a list of commands: `);
+                process.stdout.write(`File ${pathFileForDelete} delete\n`);
+                messegePath(pathNow);
             }
         });
 
     }
     catch {
-        catch_err(path_now);
+        catch_err(pathNow);
     }
 }

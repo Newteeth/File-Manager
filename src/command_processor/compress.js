@@ -1,30 +1,65 @@
-import  fs  from 'fs';
-import zlip from 'node:zlib';
+import  fs, { constants }  from 'fs';
 import path from 'path';
+import zlip from 'node:zlib';
 import process from 'process';
-import { fileURLToPath } from 'url';
 import { pipeline } from 'node:stream';
-// import { lastDirectory } from '../start_fm/path_generator.js';
+import { lastDirectory } from '../start_fm/path_generator.js';
+import { start } from '../start_fm/start_path.js';
+import { messegePath } from '../function/messege.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const root = path.parse(__dirname).dir;
-const path_file_read = path.join(root, 'files', 'text.txt');
-const path_file_zip = path.join(root, 'files', 'text.gz');
+export const compress = async (...args) => {
+    
+    const pathNow = start();
+    const gzip = zlip.BrotliCompress();    
+    const pathFileForCompress = lastDirectory(pathNow, args[0]);
+    const readZip = fs.createReadStream(pathFileForCompress);
+    const point = args[1].indexOf(':');
+    let pathToCompression = '';
+    let fileToCompress = '';
+    let writeZip = '';
 
-const args = process.argv.slice(2).toString();
-
-const compress = async () => {
-    // const path_next = lastDirectory();
-    const gzip = zlip.createGzip();
-    const read_zip = fs.createReadStream(path_file_read);
-    const write_zip = fs.createWriteStream(path_file_zip, { encoding: 'utf8'});
-    pipeline(read_zip, gzip, write_zip, (error) => {
-        if (error) throw new Error('File not compress');        
-    });
-    process.stdout.write(`file text.txt compress in: text.gz\n\n`)
-    process.stdout.write(`You are currently in path: ${1}\n
-Enter command or "help" for a list of commands: `);
+    try {
+        if (point > 0) {
+            pathToCompression = args[1];
+            fs.access(pathToCompression, constants.F_OK, (error) => {
+                if (error) {
+                    console.error('Invalid path');
+                    messegePath(pathNow);
+                    return;
+                }
+                fileToCompress = lastDirectory(args[1], `${args[0]}.br`);
+                writeZip = fs.createWriteStream(fileToCompress, { encoding: 'utf8'});
+                pipeline(readZip, gzip, writeZip, (error) => {
+                    if (error) console.log('File not compress');
+                    process.stdout.write(`${args[0]} compress in: ${pathToCompression}\n`)
+                    messegePath(pathNow);
+                });
+            });            
+        }
+        if (point === -1) {
+            pathToCompression = args[1];
+            fileToCompress = lastDirectory(pathNow, pathToCompression);
+            fs.access(fileToCompress, constants.F_OK, (error) => {
+                if (error) {
+                    console.error('Invalid path');
+                    messegePath(pathNow);
+                    return;           
+                }
+                const readZip = fs.createReadStream(pathFileForCompress);
+                writeZip = fs.createWriteStream(path.join(fileToCompress, `${args[0]}.br`), { encoding: 'utf8'});
+                pipeline(readZip, gzip, writeZip, (error) => {
+                    if (error) {
+                        console.error('File not compress');
+                        messegePath(pathNow);
+                        return;
+                    }
+                    process.stdout.write(`${args[0]} compress in: ${pathToCompression}\n`);
+                    messegePath(pathNow);
+                });
+            });  
+        }
+    }
+    catch {
+        console.error('error')
+    }    
 }
-
-await compress();

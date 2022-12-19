@@ -1,12 +1,35 @@
+import fs, { constants } from 'fs';
 import { lastDirectory } from '../start_fm/path_generator.js';
+import { start } from '../start_fm/start_path.js';
+import { messegePath } from '../function/messege.js';
 
-const args = process.argv.slice(2).toString();
+export const add =  (pathNewFile) => {
 
-const add =  () => {
-    const path_next = lastDirectory();
-    console.log('function add: ' + args);
-    process.stdout.write(`You are currently in path: ${1}\n
-Enter command or "help" for a list of commands: `);
+    const pathNow = start();
+    const point = pathNewFile.indexOf('.');
+    
+    try {
+        const pathNext = lastDirectory(pathNow, pathNewFile);
+        fs.access(pathNext, constants.F_OK, (error) => {
+            if (pathNext) {
+                if (point === 1) {
+                    fs.writeFile(pathNext, '', (err) => { // TODO not always creat file
+                        if (err) console.log('File cannot create');
+                        process.stdout.write(`File ${pathNewFile} create on ${pathNow} path\n`);
+                        messegePath(pathNow);
+                    });
+                }
+                if (point === -1) {
+                    fs.mkdir(pathNext, err => {
+                        if (err) console.log('Folder cannot create');
+                        process.stdout.write(`Folder ${pathNewFile} create on ${pathNow} path\n`);
+                        messegePath(pathNow);
+                    });
+                }
+            }
+        });
+    }
+    catch {
+        catch_err(pathNow);
+    }
 }
-
-add();
