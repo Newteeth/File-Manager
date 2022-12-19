@@ -27,13 +27,13 @@ export const find_commands = (command_terminal) => {
         break;
         case 'cat': cat(args2); // work, but i wont use pipline
         break;
-        case 'cp': console.log('this is: ' + args1);
+        case 'cp': console.log('this is: ' + args1); // not implemented
         break;
-        case 'mv': console.log('this is: ' + args1);
+        case 'mv': console.log('this is: ' + args1); // not implemented
         break;
         case 'rm': rm(args2); // work
         break;
-        case 'rn': console.log('this is: ' + args1);
+        case 'rn': console.log('this is: ' + args1); // not implemented
         break;
         case 'compress': compress(args2, args3); // work
         break;
